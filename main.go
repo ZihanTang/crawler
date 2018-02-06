@@ -20,6 +20,7 @@ var mysqlPort int
 var mysqlUsername string
 var mysqlPassword string
 var mysqlDatabase string
+var mysqlRepair bool
 
 var d db.Database
 var hh db.HouseHandler
@@ -142,6 +143,8 @@ func main() {
 	flag.StringVar(&mysqlUsername, "mysql-username", "root", "user of mysql server")
 	flag.StringVar(&mysqlPassword, "mysql-password", "root", "password of mysql server")
 	flag.StringVar(&mysqlDatabase, "mysql-database", "lianjia", "database name of mysql server")
+	flag.BoolVar(&mysqlRepair, "mysql-repair", false, "repair database")
+
 	flag.Parse()
 	d = db.Database{
 		Host:           mysqlHost,
@@ -160,6 +163,44 @@ func main() {
 		fmt.Println(err)
 		os.Exit(1)
 	}
+	if mysqlRepair {
+		if err := fixMySQL(); err != nil {
+			fmt.Println(err)
+			os.Exit(1)
+		}
+		os.Exit(0)
+	}
 	c := gocrawl.NewCrawlerWithOptions(opts)
 	c.Run("https://sh.lianjia.com/ershoufang/pudong/")
+}
+
+func fixMySQL() error {
+	e, err := hh.DatabaseConfig.Client()
+	if err != nil {
+		return err
+	}
+	house := new(db.UsedHouse)
+	// case: area is -1
+	rows, err := e.Where("area =?", -1).Rows(house)
+	if err != nil {
+		return err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		if err = rows.Scan(house); err != nil {
+			return err
+		}
+		a := house.AreaString
+		a = rxFloat.FindString(a)
+		af, err := strconv.ParseFloat(a, 64)
+		if err != nil {
+			house.Area = -1.0
+		} else {
+			house.Area = af
+		}
+		if _, err = e.Update(house, &db.UsedHouse{UUID: house.UUID}); err != nil {
+			return err
+		}
+	}
+	return nil
 }
