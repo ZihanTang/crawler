@@ -28,7 +28,7 @@ var rxOk = regexp.MustCompile(`http://sh\.lianjia\.com/ershoufang/(.*)?$`)
 var rxUsedHouse = regexp.MustCompile(`http://sh\.lianjia\.com/ershoufang/[0-9]*\.html`)
 var rxPage = regexp.MustCompile(`http://sh\.lianjia\.com/ershoufang/[a-z]*(/pg[0-9]*)?$`)
 var rxPrice = regexp.MustCompile("[0-9]+")
-var rxFloat = regexp.MustCompile(`[0-9]+\.[0-9]+`)
+var rxFloat = regexp.MustCompile(`[0-9]+\.?[0-9]+`)
 var pageMap = make(map[string]bool)
 
 type Ext struct {
@@ -112,7 +112,6 @@ func (e *Ext) Visit(ctx *gocrawl.URLContext, res *http.Response, doc *goquery.Do
 // Filter we deal with links that is either pageable list or used house detail page.
 func (e *Ext) Filter(ctx *gocrawl.URLContext, isVisited bool) bool {
 	u := ctx.NormalizedURL().String()
-
 	if isVisited {
 		return false
 	}
