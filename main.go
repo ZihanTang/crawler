@@ -28,6 +28,7 @@ var rxOk = regexp.MustCompile(`http://sh\.lianjia\.com/ershoufang/(.*)?$`)
 var rxUsedHouse = regexp.MustCompile(`http://sh\.lianjia\.com/ershoufang/[0-9]*\.html`)
 var rxPage = regexp.MustCompile(`http://sh\.lianjia\.com/ershoufang/[a-z]*(/pg[0-9]*)?$`)
 var rxPrice = regexp.MustCompile("[0-9]+")
+var rxFloat = regexp.MustCompile(`[0-9]+\.[0-9]+`)
 var pageMap = make(map[string]bool)
 
 type Ext struct {
@@ -70,7 +71,15 @@ func (e *Ext) Visit(ctx *gocrawl.URLContext, res *http.Response, doc *goquery.Do
 	h.Floor = content.Find(".room .subInfo").Text()
 	h.Direction = content.Find(".type .mainInfo").Text()
 	h.DecorationStatus = content.Find(".type .subInfo").Text()
-	h.Area = content.Find(".area .mainInfo").Text()
+	area := content.Find(".area .mainInfo").Text()
+	h.AreaString = area
+	area = rxFloat.FindString(area)
+	af, err := strconv.ParseFloat(area, 64)
+	if err != nil {
+		h.Area = -1.0
+	} else {
+		h.Area = af
+	}
 	a := content.Find(".area .subInfo").Text()
 	h.AgeString = a
 	a = rxPrice.FindString(a)

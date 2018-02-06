@@ -40,18 +40,19 @@ func (hh *HouseHandler) Save() error {
 type UsedHouse struct {
 	UUID string `yaml:"uuid" xorm:"pk 'uuid'"`
 	// basic info
-	Layout           string `yaml:"layout" xorm:"'layout'"`
-	Area             string `yaml:"area" xorm:"'area'"`
-	Age              int    `yaml:"age" xorm:"'age'"`
-	Floor            string `yaml:"floor" xorm:"'floor'"`
-	DecorationStatus string `yaml:"decoration_status" xorm:"'decoration_status'"`
-	TotalPrice       int    `yaml:"total_price" xorm:"'total_price'"`
-	UnitPrice        int    `yaml:"unit_price" xorm:"'unit_price'"`
-	AgeString        string `yaml:"age_string" xorm:"'age_string'"`
-	Direction        string `yaml:"direction" xorm:"'direction'"`
+	Layout           string  `yaml:"layout" xorm:"'layout'"`
+	Area             float64 `yaml:"area" xorm:"'area'"`
+	AreaString       string  `yaml:"areaString" xorm:"'area_string'"`
+	Age              int     `yaml:"age" xorm:"'age'"`
+	Floor            string  `yaml:"floor" xorm:"'floor'"`
+	DecorationStatus string  `yaml:"decoration_status" xorm:"'decoration_status'"`
+	TotalPrice       int     `yaml:"total_price" xorm:"'total_price'"`
+	UnitPrice        int     `yaml:"unit_price" xorm:"'unit_price'"`
+	AgeString        string  `yaml:"age_string" xorm:"'age_string'"`
+	Direction        string  `yaml:"direction" xorm:"'direction'"`
 	// community info
 	Location      string `yaml:"location" xorm:"location"`
-	Distric       string `yaml:"distric" xorm:"distric"`
+	District      string `yaml:"district" xorm:"district"`
 	Region        string `yaml:"region" xorm:"'region'"`
 	Subway        string `yaml:"subway" xorm:"'subway'"`
 	HousingEstate string `yaml:"housing_estate" xorm:"'housing_estate'"`
