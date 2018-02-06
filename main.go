@@ -93,7 +93,7 @@ func (e *Ext) Visit(ctx *gocrawl.URLContext, res *http.Response, doc *goquery.Do
 	h.HousingEstate = content.Find(".communityName a.info").Text()
 	info := content.Find(".areaName .info").Text()
 	infoFields := strings.Fields(info)
-	h.Distric = infoFields[0]
+	h.District = infoFields[0]
 	h.Region = infoFields[1]
 	if len(infoFields) > 2 {
 		h.Location = infoFields[2]
