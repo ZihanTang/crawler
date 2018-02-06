@@ -94,8 +94,12 @@ func (e *Ext) Visit(ctx *gocrawl.URLContext, res *http.Response, doc *goquery.Do
 	h.HousingEstate = content.Find(".communityName a.info").Text()
 	info := content.Find(".areaName .info").Text()
 	infoFields := strings.Fields(info)
-	h.District = infoFields[0]
-	h.Region = infoFields[1]
+	if len(infoFields) > 0 {
+		h.District = infoFields[0]
+	}
+	if len(infoFields) > 1 {
+		h.Region = infoFields[1]
+	}
 	if len(infoFields) > 2 {
 		h.Location = infoFields[2]
 	}
@@ -137,7 +141,7 @@ func main() {
 	opts.CrawlDelay = 500 * time.Millisecond
 	opts.LogFlags = gocrawl.LogError
 	opts.SameHostOnly = false
-	opts.MaxVisits = 100000
+	opts.MaxVisits = 1000000
 	flag.StringVar(&mysqlHost, "mysql-host", "127.0.0.1", "hostname of mysql server")
 	flag.IntVar(&mysqlPort, "mysql-port", 3306, "port of mysql server")
 	flag.StringVar(&mysqlUsername, "mysql-username", "root", "user of mysql server")
