@@ -1,11 +1,25 @@
 package db
 
-import "fmt"
+import (
+	"crypto/sha1"
+	"encoding/hex"
+	"fmt"
+)
 
 // HouseHandler handle db related issues
 type HouseHandler struct {
-	Houses         []UsedHouse
+	House          *UsedHouse
 	DatabaseConfig Database
+}
+
+// Init init house handler
+func (hh *HouseHandler) Init() error {
+	e, err := hh.DatabaseConfig.Client()
+	if err != nil {
+		return err
+	}
+	e.Sync(new(UsedHouse))
+	return nil
 }
 
 //Save save to mysql
@@ -14,17 +28,41 @@ func (hh *HouseHandler) Save() error {
 	if err != nil {
 		return err
 	}
-
-	t, _ := e.DBMetas()
-	fmt.Println(t[0])
-	// fmt.Println(e)
-	// e.Sync()
-	// fmt.Println(hh.Houses)
-	// fmt.Println(&hh.Houses)
-	affected, err := e.Insert(&hh.Houses)
-	fmt.Println(affected)
+	_, err = e.Insert(hh.House)
 	if err != nil {
+		fmt.Println(err)
 		return err
 	}
 	return nil
+}
+
+//UsedHouse basic struct holding hourse info
+type UsedHouse struct {
+	UUID string `yaml:"uuid" xorm:"pk 'uuid'"`
+	// basic info
+	Layout           string `yaml:"layout" xorm:"'layout'"`
+	Area             string `yaml:"area" xorm:"'area'"`
+	Age              int    `yaml:"age" xorm:"'age'"`
+	Floor            string `yaml:"floor" xorm:"'floor'"`
+	DecorationStatus string `yaml:"decoration_status" xorm:"'decoration_status'"`
+	TotalPrice       int    `yaml:"total_price" xorm:"'total_price'"`
+	UnitPrice        int    `yaml:"unit_price" xorm:"'unit_price'"`
+	AgeString        string `yaml:"age_string" xorm:"'age_string'"`
+	Direction        string `yaml:"direction" xorm:"'direction'"`
+	// community info
+	Location      string `yaml:"location" xorm:"location"`
+	Distric       string `yaml:"distric" xorm:"distric"`
+	Region        string `yaml:"region" xorm:"'region'"`
+	Subway        string `yaml:"subway" xorm:"'subway'"`
+	HousingEstate string `yaml:"housing_estate" xorm:"'housing_estate'"`
+	// others
+	Link string `yaml:"link" xorm:"'link'"`
+}
+
+// Digest get digest
+func (uh *UsedHouse) Digest() string {
+	s := fmt.Sprintf("%v", uh)
+	h := sha1.New()
+	h.Write([]byte(s))
+	return hex.EncodeToString(h.Sum(nil))
 }
