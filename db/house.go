@@ -30,7 +30,6 @@ func (hh *HouseHandler) Save() error {
 	}
 	_, err = e.Insert(hh.House)
 	if err != nil {
-		fmt.Println(err)
 		return err
 	}
 	return nil

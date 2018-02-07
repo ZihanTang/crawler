@@ -44,7 +44,9 @@ func (e *Ext) Visit(ctx *gocrawl.URLContext, res *http.Response, doc *goquery.Do
 		return nil, true
 	}
 	fmt.Printf("Visit used house link: %s, craw information\n", u)
-
+	if doc == nil {
+		return nil, false
+	}
 	h := db.UsedHouse{}
 	h.Link = u
 
@@ -138,7 +140,7 @@ func main() {
 	ext := &Ext{&gocrawl.DefaultExtender{}}
 	// Set custom options
 	opts := gocrawl.NewOptions(ext)
-	opts.CrawlDelay = 500 * time.Millisecond
+	opts.CrawlDelay = 300 * time.Millisecond
 	opts.LogFlags = gocrawl.LogError
 	opts.SameHostOnly = false
 	opts.MaxVisits = 1000000
